@@ -1,0 +1,28 @@
+---
+- name: Read WireGuard private key
+  ansible.builtin.slurp:
+    path: /etc/wireguard/privatekey
+  register: wireguard_server_privatekey
+
+- name: Check if WireGuard public key already exists
+  ansible.builtin.stat:
+    path: /etc/wireguard/publickey
+  register: wireguard_server_publickey_state
+
+- name: Create WireGuard public key
+  when: not wireguard_server_publickey_state.stat.exists
+  block:
+    - name: Generate WireGuard public key
+      ansible.builtin.command:
+        cmd: wg pubkey
+        stdin: "{{ wireguard_server_privatekey.content | ansible.builtin.b64decode | trim }}"
+      changed_when: true
+      register: wireguard_server_publickey
+
+    - name: Write WireGuard public key
+      ansible.builtin.copy:
+        content: "{{ wireguard_server_publickey.stdout }}"
+        dest: /etc/wireguard/publickey
+        owner: root
+        group: root
+        mode: "0644"

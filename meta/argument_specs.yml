@@ -1,0 +1,26 @@
+---
+argument_specs:
+  main:
+    author: Niclas Spreng
+    description: Setup WireGuard server.
+    short_description: wireguard_server
+    options:
+      wireguard_server_interface:
+        type: str
+        default: wg0
+        description: WireGuard interface name.
+      wireguard_server_port:
+        type: int
+        default: 51820
+        description: UDP port the server listens on.
+      wireguard_server_address:
+        type: str
+        default: 10.10.0.1/24
+        description: Server address inside the VPN tunnel in CIDR notation.
+      wireguard_server_public_interface:
+        type: str
+        description: Internet-facing interface used for NAT.
+      wireguard_server_peers:
+        type: dict
+        default: {}
+        description: Peers allowed to connect, keyed by peer name.

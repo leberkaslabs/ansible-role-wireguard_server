@@ -1,0 +1,7 @@
+---
+- name: Restart WireGuard
+  ansible.builtin.systemd_service:
+    # yamllint disable-line rule:quoted-strings
+    name: "wg-quick@{{ wireguard_server_interface }}"
+    state: restarted
+  listen: restart wireguard service

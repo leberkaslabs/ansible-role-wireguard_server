@@ -1,0 +1,24 @@
+---
+- name: Check if WireGuard private key already exists
+  ansible.builtin.stat:
+    path: /etc/wireguard/privatekey
+  register: wireguard_server_privatekey_state
+
+- name: Create WireGuard private key
+  when: not wireguard_server_privatekey_state.stat.exists
+  block:
+    - name: Generate WireGuard private key
+      ansible.builtin.command:
+        cmd: wg genkey
+      changed_when: true
+      no_log: true
+      register: wireguard_server_privatekey
+
+    - name: Write WireGuard private key
+      ansible.builtin.copy:
+        content: "{{ wireguard_server_privatekey.stdout }}"
+        dest: /etc/wireguard/privatekey
+        owner: root
+        group: root
+        mode: "0600"
+      no_log: true

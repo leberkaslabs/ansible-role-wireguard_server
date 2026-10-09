@@ -1,0 +1,18 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Ping WireGuard VPN server through tunnel
+      ansible.builtin.command:
+        cmd: ping -c 3 -I wg0 10.10.0.1
+      register: wireguard_server_ping
+      changed_when: false
+      ignore_errors: true
+
+    - name: Ensure WireGuard VPN server is available
+      ansible.builtin.assert:
+        fail_msg: The WireGuard VPN server is unreachable
+        quiet: true
+        that: wireguard_server_ping.rc == 0

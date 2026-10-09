@@ -1,0 +1,9 @@
+---
+_wireguard_server_packages:
+  default:
+    - wireguard-tools
+  Debian:
+    - wireguard
+    - wireguard-tools
+wireguard_server_packages: >-
+  {{ _wireguard_server_packages[ansible_os_family] | default(_wireguard_server_packages['default']) }}

@@ -1,0 +1,24 @@
+---
+# WireGuard interface name.
+# Defines the config file and the wg-quick@<name> service.
+wireguard_server_interface: wg0
+
+# UDP port the server listens on.
+# Must be opened in the firewall and used as Endpoint by clients.
+wireguard_server_port: 51820
+
+# Server address inside the VPN tunnel.
+# The subnet defines the address range for all peers.
+wireguard_server_address: 10.10.0.1/24
+
+# Internet-facing interface for NAT ("" disables NAT)
+wireguard_server_public_interface: >-
+  {{ ansible_facts.default_ipv4.interface | default('') }}
+
+# Peers allowed to connect, keyed by name.
+# Each peer needs public_key and allowed_ips, persistent_keepalive is optional.
+wireguard_server_peers: {}
+# laptop:
+#   public_key: ghi789PublicKeyHere=
+#   allowed_ips:
+#     - 10.10.0.2/32

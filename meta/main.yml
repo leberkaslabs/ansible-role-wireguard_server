@@ -1,0 +1,23 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: Niclas Spreng
+  description: Setup WireGuard server.
+  license: MIT
+  min_ansible_version: "2.15"
+  namespace: leberkaslabs
+  role_name: wireguard_server
+
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+        - trixie
+    - name: EL
+      versions:
+        - "9"
+        - "8"
+        - "10"
+
+  galaxy_tags: []

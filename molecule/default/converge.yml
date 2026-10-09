@@ -1,0 +1,23 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: true
+
+  vars:
+    # Peers allowed to connect, keyed by name.
+    # Each peer needs public_key and allowed_ips, persistent_keepalive is optional.
+    wireguard_server_peers:
+      laptop:
+        public_key: ovQOSDw6P0ppedWvg8sd9RcNG1LPwSQ2T57jhnjL3m0=
+        allowed_ips:
+          - 10.10.0.2/32
+
+  pre_tasks:
+    - name: Update cache (Debian)
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      when: ansible_facts.os_family == "Debian"
+
+  roles:
+    - leberkaslabs.wireguard_server

@@ -1,0 +1,23 @@
+{{ ansible_managed | ansible.builtin.comment }}
+
+[Interface]
+Address = {{ wireguard_server_address }}
+ListenPort = {{ wireguard_server_port }}
+PostUp = wg set %i private-key /etc/wireguard/privatekey
+
+{% if wireguard_server_public_interface | default('') | length > 0 %}
+# NAT for VPN clients accessing the internet
+PostUp = iptables -t nat -A POSTROUTING -o {{ wireguard_server_public_interface }} -j MASQUERADE
+PostDown = iptables -t nat -D POSTROUTING -o {{ wireguard_server_public_interface }} -j MASQUERADE
+{% endif %}
+
+{% for name, peer in wireguard_server_peers.items() %}
+# {{ name }}
+[Peer]
+PublicKey = {{ peer.public_key }}
+AllowedIPs = {{ peer.allowed_ips | join(', ') }}
+{% if peer.persistent_keepalive is defined %}
+PersistentKeepalive = {{ peer.persistent_keepalive }}
+{% endif %}
+
+{% endfor %}

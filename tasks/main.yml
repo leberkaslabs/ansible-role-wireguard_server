@@ -1,0 +1,45 @@
+---
+- name: Ensure WireGuard package are installed
+  ansible.builtin.package:
+    name: "{{ wireguard_server_packages }}"
+    state: present
+
+- name: Enable kernel IP forwarding
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    state: present
+    sysctl_file: /etc/sysctl.d/99-wireguard.conf
+    sysctl_set: true
+    value: "1"
+
+- name: Ensure WireGuard directory exists
+  ansible.builtin.file:
+    path: /etc/wireguard
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Manage WireGuard private key
+  ansible.builtin.include_tasks: wireguard_privatekey.yml
+
+- name: Manage WireGuard public key
+  ansible.builtin.include_tasks: wireguard_publickey.yml
+
+- name: Manage WireGuard configuration
+  ansible.builtin.template:
+    src: wg-server.conf.j2
+    # yamllint disable-line rule:quoted-strings
+    dest: "/etc/wireguard/{{ wireguard_server_interface }}.conf"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+  notify: restart wireguard service
+
+- name: Enable and start WireGuard
+  ansible.builtin.systemd_service:
+    # yamllint disable-line rule:quoted-strings
+    name: "wg-quick@{{ wireguard_server_interface }}"
+    enabled: true
+    state: started
