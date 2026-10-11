@@ -4,13 +4,13 @@
     name: "{{ wireguard_server_packages }}"
     state: present
 
-- name: Enable kernel IP forwarding
+- name: Ensure ip forwarding is enabled for routing
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
-    state: present
-    sysctl_file: /etc/sysctl.d/99-wireguard.conf
-    sysctl_set: true
     value: "1"
+    sysctl_file: /etc/sysctl.d/60-ipv4_sysctl.conf
+    sysctl_set: true
+    state: present
 
 - name: Ensure WireGuard directory exists
   ansible.builtin.file:
